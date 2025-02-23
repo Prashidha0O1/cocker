@@ -1,4 +1,4 @@
-this readme will serve as a notebooks for my notes while i am making a simple container like docker
+this readme will serve as a notebook for my notes while i am making a simple container like docker
 
 namespaces, 
 it is where we limit what process can see, when we run a container in docker
