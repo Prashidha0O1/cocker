@@ -24,7 +24,7 @@ func run(){
   cmd.Stdin = os.Stdin
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
-
+  cmd.SysProcAttr = &syscall.SysProcAttr
   cmd.Run()
 
 }
