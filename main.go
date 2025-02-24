@@ -18,13 +18,17 @@ func main(){
 
 func run(){
 
-  fmt.Println("Running %v", os.Args[2:])
+  fmt.Println("Running: %v", os.Args[2:])
 
   cmd := exec.Command(os.Args[2], os.Args[3:]...)
   cmd.Stdin = os.Stdin
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
+  cmd.SysProcAttr = &syscall.SysProcAttr{
+    Cloneflags: systcall.CLONE_NEWUTS,
 
+  }
   cmd.Run()
 
 }
+
