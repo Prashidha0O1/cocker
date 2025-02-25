@@ -12,6 +12,8 @@ func main(){
   case "run":
     run()
 
+  case "child":
+    child()
   default:
     panic("skibidi command, try again")
   }

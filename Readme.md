@@ -26,3 +26,13 @@ TLDR: `docker` becomes -> `go run main.go`
 
 then this alternate `go run main.go` to run some commands <cmd> and can be some parameters. 
 
+
+Day 2 
+
+I want to containerize this command with namespaces and we are gooing to do that by creating some namespaces
+
+In Go you can do it by `SysProcAttr` and we can structure it. Inside we can pass Cloneflags because cloning is what createss a new process that we're going to run our arbitary commands in.
+
+Namespace is actually a hostname but this `SysProcAttr` is going to let us ahve our own hostname inside our container and it can't see whats happening in the hostname
+
+Here i want to run this program by itself and we can do that with "/self/proc/exe" and instead of having in "run" as a command, i'm going to pass in "child" 
