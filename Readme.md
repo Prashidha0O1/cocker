@@ -35,4 +35,11 @@ In Go you can do it by `SysProcAttr` and we can structure it. Inside we can pass
 
 Namespace is actually a hostname but this `SysProcAttr` is going to let us ahve our own hostname inside our container and it can't see whats happening in the hostname
 
-Here i want to run this program by itself and we can do that with "/self/proc/exe" and instead of having in "run" as a command, i'm going to pass in "child" 
+Here i want to run this program by itself and we can do that with `"/self/proc/exe"` and instead of having in "run" as a command, i'm going to pass in "child"
+ Using cases when i come back here i can see what to run 
+
+run is going to reinvoke this new process but inside its own new namespaces
+but incase of child, we dont have to set a new namespace this time but instead of new namespace we're going to set the only hostname this time. 
+
+
+Similary like the `Cloneflags: CLONE_NEWUTS` we have `CLONE_NEWPID`

@@ -23,7 +23,7 @@ func run(){
 
   fmt.Println("Running: %v", os.Args[2:])
 
-  cmd := exec.Command("/prco/self/exe", append([]string{"child"}, os.Args[2]...)os.Args[3:]...)
+  cmd := exec.Command("/prco/self/exe", append([]string{"child"}, os.Args[2]...)...)
   cmd.Stdin = os.Stdin
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
