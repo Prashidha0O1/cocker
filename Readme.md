@@ -1,45 +1,69 @@
-this readme will serve as a notebook for my notes while i am making a simple container like docker
+This readme will serve as a notebook for my notes while I am making a simple container like Docker.
 
-namespaces, 
-it is where we limit what process can see, when we run a container in docker
-we can only see few of the process running on the host and that's because its got
-a namespace for process IDs (PID for short) as it can only see its host name cause thats
-because of namespacing
+### How Namespaces Work
 
-How to setup these namespaces ? 
-using syscalls as this is a main part what it makesa container into a container. Cause restricting the view of a process that a process has the things that are goin on the host machine
+Namespaces limit what a process can see. When we run a container in Docker, we only see a few processes running on the host. This is because Docker assigns a separate namespace for process IDs (PID namespace), preventing the containerized process from viewing all the host’s processes. Similarly, a namespace for the hostname ensures the container has its hostname, independent of the host machine.
 
-So what are we trying to build????
+### Setting Up Namespaces
 
+To create these namespaces, we use syscalls. These syscalls restrict the view a process has of the host machine, making it unaware of other processes and system resources.
 
-here when you're tryin to run docker the command goes like this 
-`docker run image <cmd> <args>/<params>`
+### What Are We Trying to Build?
 
-this container gonna be something like this in my go program i can do similarly like docker command:
+The goal is to mimic Docker’s behavior using Golang. The Docker command to run a container looks like this:
+```
+docker run image <cmd> <args>
+```
+Similarly, in my Go program, we can achieve the same functionality using:
+```
+go run main.go run image <cmd> <args>
+```
 
-go run <filename> in my case main.go 
-`go run main.go run image <cmd> <args>`
+This means:
+` go run main.go ` compiles and runs my executable, which is similar to executing Docker.
 
-go run main.go compiles and run my main executable this is kind of a equivalent of docker
+run is a subcommand that creates an isolated container process.
 
-TLDR: `docker` becomes -> `go run main.go` 
+The container executes the given command with specified arguments in a namespace-restricted environment.
 
-then this alternate `go run main.go` to run some commands <cmd> and can be some parameters. 
+### Containerizing Commands Using Namespaces
 
+The next step is to containerize the command execution by creating namespaces. In Go, we can do this using SysProcAttr within the syscall package. This allows us to structure our container’s execution environment.
 
-Day 2 
+Using SysProcAttr and Clone Flags
 
-I want to containerize this command with namespaces and we are gooing to do that by creating some namespaces
+The SysProcAttr struct allows us to pass Cloneflags, which are essential for process cloning and namespace creation. This ensures the commands we run execute in a fully isolated environment.
 
-In Go you can do it by `SysProcAttr` and we can structure it. Inside we can pass Cloneflags because cloning is what createss a new process that we're going to run our arbitary commands in.
+For example:
 
-Namespace is actually a hostname but this `SysProcAttr` is going to let us ahve our own hostname inside our container and it can't see whats happening in the hostname
+- UTS Namespace (CLONE_NEWUTS): Isolates the hostname.
 
-Here i want to run this program by itself and we can do that with `"/self/proc/exe"` and instead of having in "run" as a command, i'm going to pass in "child"
- Using cases when i come back here i can see what to run 
+- PID Namespace (CLONE_NEWPID): Ensures the container has its process hierarchy.
 
-run is going to reinvoke this new process but inside its own new namespaces
-but incase of child, we dont have to set a new namespace this time but instead of new namespace we're going to set the only hostname this time. 
+Running the Program Inside Its Own Namespace
 
+To run the program inside its namespace, we use:
+```
+os.Executable()
+```
+Instead of executing the run directly, we invoke the program using `/proc/self/exe`. This approach ensures that:
+`
+run reinvokes the process inside a new namespace.
 
-Similary like the `Cloneflags: CLONE_NEWUTS` we have `CLONE_NEWPID`
+child executes within the existing namespace with an isolated hostname.
+`
+
+### Execution Flow
+
+User runs:
+```
+go run main.go run image <cmd> <args>
+```
+
+The program creates a new process with namespaces using Cloneflags.
+
+The process runs the specified command inside an isolated environment.
+
+If the child is executed, it runs with only the hostname isolated.
+
+This approach closely mimics how Docker manages containerized processes using Linux namespaces and syscalls.
